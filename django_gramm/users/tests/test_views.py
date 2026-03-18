@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from users.models import Profile, Subscription
 from blog.models import Post
 from django.utils.http import urlsafe_base64_encode
@@ -37,8 +38,11 @@ def test_signup_sends_email(client, mailoutbox):
 
 
 @pytest.mark.django_db
+@override_settings(AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend'])
 def test_activate_user(client):
+    User = get_user_model()
     user = User.objects.create_user("inactive", password="123", is_active=False)
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
 
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = account_activation_token.make_token(user)
@@ -70,8 +74,12 @@ def test_edit_profile(logged):
 def test_profile_view_pagination(logged):
     client, user = logged
 
-    for i in range(20):
-        Post.objects.create(author=user, description=f"Post {i}")
+    for i in range(15):
+        Post.objects.create(
+            author=user,
+            description=f"Post {i}",
+            status=Post.Status.PUBLISHED,
+        )
 
     response = client.get(reverse("users:profile", kwargs={"username": user.username}))
 

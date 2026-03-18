@@ -76,8 +76,10 @@ docker-compose up --build
 ```
 The app will be available at http://localhost:8000
 
+
 ## Tests
 ```bash
+$env:DJANGO_SETTINGS_MODULE="django_gramm.settings"
 pytest
 ```
 
