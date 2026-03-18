@@ -1,0 +1,39 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Sign Up</h2>
+        </div>
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="auth-field">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <p class="auth-field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <button class="btn btn-primary w-100 py-2 mt-4" type="submit">Sign in</button>
+            </form>
+
+            <p class="auth-extra">
+                Already have an account?
+                <a href="{% url 'users:login' %}">Login here</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

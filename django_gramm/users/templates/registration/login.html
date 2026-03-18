@@ -1,0 +1,70 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+
+    <div class="card" style="max-width: 400px; width: 100%;">
+
+        <div class="card-header text-center">
+            <h2>Log In</h2>
+        </div>
+
+        <div class="card-body">
+
+            {% if form.errors %}
+                <p class="auth-error text-danger text-center mb-3">
+                    Your username and password didn't match. Please try again.
+                </p>
+            {% else %}
+                <p class="auth-info text-center mb-3">
+                    Please, use the form to log in. If you don't have an account,
+                    <a href="{% url 'users:signup' %}">register here</a>.
+                </p>
+            {% endif %}
+
+            <form action="{% url 'users:login' %}" method="post" class="auth-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="auth-field mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                    <p class="auth-field-error text-danger small">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
+                    Log In
+                </button>
+            </form>
+
+            <p class="auth-extra text-center mt-3">
+                <a href="{% url 'users:password_reset' %}">Forgot your password?</a>
+            </p>
+
+            <hr>
+            <a href="{% url 'social:begin' 'google-oauth2' %}?next={% url 'blog:feed' %}"
+               class="btn btn-outline-danger w-100 mb-2 d-flex align-items-center justify-content-center">
+                <i class="fab fa-google me-2"></i>
+                Log in with Google
+            </a>
+
+            <a href="{% url 'social:begin' 'github' %}?next={% url 'blog:feed' %}"
+               class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center">
+                <i class="fab fa-github me-2"></i>
+                Log in with GitHub
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

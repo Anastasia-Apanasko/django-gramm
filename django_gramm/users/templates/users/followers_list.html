@@ -1,0 +1,32 @@
+{% extends "blog/base.html" %}
+{% block title %}{{ user_profile.username }}'s Followers{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3 text-center">Followers of {{ user_profile.username }}</h2>
+
+    {% if followers %}
+    <ul class="list-group list-group-flush w-50 mx-auto">
+        {% for user in followers %}
+        <li class="list-group-item d-flex align-items-center">
+            <div class="me-3">
+                {% if user.profile.photo %}
+                <img src="{{ user.profile.photo.url }}" alt="Avatar" class="rounded-circle" width="40" height="40">
+                {% else %}
+                <img src="/media/avatars/default.jpg" alt="Avatar" class="rounded-circle" width="40" height="40">
+                {% endif %}
+            </div>
+            <div>
+                <a href="{% url 'users:profile' user.username %}" class="fw-bold text-decoration-none">{{ user.username }}</a>
+                {% if user.first_name or user.last_name %}
+                <div class="text-muted">{{ user.first_name }} {{ user.last_name }}</div>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info text-center w-50 mx-auto">No followers yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

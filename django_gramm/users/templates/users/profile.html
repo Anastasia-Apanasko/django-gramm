@@ -1,0 +1,112 @@
+{% extends "blog/base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ user_profile.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-auto">
+            {% if user_profile.profile.photo %}
+            <img src="{{ user_profile.profile.photo.url }}" alt="Avatar" class="rounded-circle" width="120" height="120">
+            {% else %}
+            <img src="/media/avatars/default.jpg" alt="Avatar" class="rounded-circle" width="120" height="120">
+            {% endif %}
+        </div>
+        <div class="col">
+            <h2>{{ user_profile.username }}</h2>
+            {% if user_profile.first_name or user_profile.last_name %}
+            <p class="mb-1">{{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+            {% endif %}
+            {% if user_profile.profile.bio %}
+            <p>{{ user_profile.profile.bio }}</p>
+            {% endif %}
+
+            <div class="mb-2">
+                {% if user == user_profile %}
+                <a class="btn btn-primary btn-sm" href="{% url 'blog:new_post' %}">Create New Post</a>
+                <a class="btn btn-secondary btn-sm" href="{% url 'blog:drafts' %}">My Drafts</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'users:edit' %}">Edit Profile</a>
+                {% else %}
+                    {% if is_following %}
+                        <button class="btn btn-outline-danger btn-sm unfollow-btn" data-url="{% url 'users:unfollow_ajax' user_profile.username %}">Unfollow</button>
+                        {% else %}
+                        <button class="btn btn-success btn-sm follow-btn" data-url="{% url 'users:follow_ajax' user_profile.username %}">Follow</button>
+                        {% endif %}
+
+                {% endif %}
+            </div>
+
+            <div>
+                <p class="me-3"><strong>{{ posts|length }}</strong> posts</p>
+                <a href="{% url 'users:followers_list' user_profile.username %}" class="text-dark text-decoration-none me-3">
+                    <strong id="followers-count">{{ followers_count }}</strong> followers
+                </a>
+                <a href="{% url 'users:following_list' user_profile.username %}" class="text-dark text-decoration-none">
+                    <strong>{{ following_count }}</strong> following
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for post in posts %}
+        <div class="col">
+            <div class="card shadow-sm h-100">
+
+                {% if post.images.all %}
+                <div id="carouselPost{{ post.id }}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        {% for image in post.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="{% url 'blog:post_detail' post.pk %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="Post image">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if post.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselPost{{ post.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselPost{{ post.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <a href="{% url 'blog:post_detail' post.pk %}" class="text-decoration-none text-dark">
+                        <p class="card-text">{{ post.description|truncatewords:15 }}</p>
+                    </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ post.publish|date:"M d, Y" }}</small>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-success like-btn" data-type="post" data-id="{{ post.pk }}">
+                                👍 <span id="post-likes-count-{{ post.pk }}">{{ post.likes_count }}</span>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger dislike-btn" data-type="post" data-id="{{ post.pk }}">
+                                👎 <span id="post-dislikes-count-{{ post.pk }}">{{ post.dislikes_count }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No posts yet.</p>
+        {% endfor %}
+    </div>
+
+    {% include "blog/pagination.html" with page=posts %}
+
+</div>
+{% endblock %}

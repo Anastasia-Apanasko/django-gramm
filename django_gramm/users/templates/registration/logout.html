@@ -1,0 +1,9 @@
+{% extends "blog/base.html" %}
+
+{% if user.is_authenticated %}
+  <p>Ви увійшли як {{ user.username }}</p>
+  <a href="{% url 'users:logout' %}">Вийти</a>
+{% else %}
+  <a href="{% url 'users:login' %}">Увійти</a> | 
+  <a href="{% url 'users:register' %}">Зареєструватися</a>
+{% endif %}

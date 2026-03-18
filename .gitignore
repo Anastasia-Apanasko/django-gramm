@@ -1,0 +1,16 @@
+__pycache__/
+/.idea
+django_gramm/.env_prod
+.venv/
+/django_gramm/media/
+/django_gramm/pg_data/
+django_gramm/.env
+/django_gramm/frontend/node_modules/
+/.pytest_cache/
+/django_gramm/.pytest_cache/
+/django_gramm/staticfiles/
+/django_gramm/static/frontend/
+/django_gramm/test_media/
+/django_gramm/populate_fake.py
+/django_gramm/certbot/
+/django_gramm/nginx/
